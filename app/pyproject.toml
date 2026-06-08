@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai4bharat-transliteration"
+version = "1.1.3"
+description = "Indic-Xlit: Transliteration library for Indic Languages. Conversion of text from English to 21 languages of South Asia."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    { name = "AI4Bharat", email = "opensource@ai4bharat.org" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "pydload",
+    "flask>=3,<4",
+    "flask-cors",
+    "Flask-Limiter",
+    "gevent",
+    "werkzeug>=3,<4",
+    "sacremoses",
+    "pandas",
+    "numpy>=1.26,<2",
+    "tqdm",
+    "ujson",
+    "mock",
+    "tensorboardX",
+    "pyarrow",
+    "fairseq",
+    "torch>=2.2,<2.3",
+    "torchaudio>=2.2,<2.3",
+    "urduhack<1",
+    "indic-nlp-library",
+]
+
+[project.urls]
+"Our Research" = "https://ai4bharat.org/transliteration"
+"Demo Website" = "https://xlit.ai4bharat.org"
+"Report Issues" = "https://github.com/AI4Bharat/IndicXlit/issues"
+"Source Code" = "https://github.com/AI4Bharat/IndicXlit/tree/master/app"
+
+[tool.setuptools.packages.find]
+exclude = ["tests"]
+
+[tool.setuptools.package-data]
+"ai4bharat.transliteration.transformer" = [
+    "models/en2indic/lang_list.txt",
+    "models/indic2en/lang_list.txt",
+]
+"ai4bharat.transliteration.rnn" = [
+    "models/default_lineup.json",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
+]
+torchaudio = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
+]

@@ -14,17 +14,41 @@ import math
 import os
 import sys
 import time
+import dataclasses
 from argparse import Namespace
 from collections import namedtuple
 
 import numpy as np
 import torch
 
-from fairseq import checkpoint_utils, distributed_utils, options, tasks, utils
-from fairseq.dataclass.configs import FairseqConfig
-from fairseq.dataclass.utils import convert_namespace_to_omegaconf
-from fairseq.token_generation_constraints import pack_constraints, unpack_constraints
-from fairseq_cli.generate import get_symbols_to_strip_from_output
+_dataclasses_get_field = dataclasses._get_field
+
+def _fairseq_py311_get_field(cls, a_name, a_type, default_kw_only):
+    try:
+        return _dataclasses_get_field(cls, a_name, a_type, default_kw_only)
+    except ValueError as exc:
+        if (
+            "mutable default" in str(exc)
+            and hasattr(cls, a_name)
+        ):
+            default = getattr(cls, a_name)
+            if isinstance(default, dataclasses.Field):
+                default = default.default
+            default_class = type(default)
+            if getattr(default_class, "__hash__", None) is None:
+                default_class.__hash__ = object.__hash__
+            return _dataclasses_get_field(cls, a_name, a_type, default_kw_only)
+        raise
+
+dataclasses._get_field = _fairseq_py311_get_field
+try:
+    from fairseq import checkpoint_utils, distributed_utils, options, tasks, utils
+    from fairseq.dataclass.configs import FairseqConfig
+    from fairseq.dataclass.utils import convert_namespace_to_omegaconf
+    from fairseq.token_generation_constraints import pack_constraints, unpack_constraints
+    from fairseq_cli.generate import get_symbols_to_strip_from_output
+finally:
+    dataclasses._get_field = _dataclasses_get_field
 
 Batch = namedtuple("Batch", "ids src_tokens src_lengths constraints")
 Translation = namedtuple("Translation", "src_str hypos pos_scores alignments")
