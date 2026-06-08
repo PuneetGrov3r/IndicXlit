@@ -21,6 +21,14 @@ from collections import namedtuple
 import numpy as np
 import torch
 
+_torch_load = torch.load
+
+def _fairseq_checkpoint_load(*args, **kwargs):
+    kwargs.setdefault("weights_only", False)
+    return _torch_load(*args, **kwargs)
+
+torch.load = _fairseq_checkpoint_load
+
 _dataclasses_get_field = dataclasses._get_field
 
 def _fairseq_py311_get_field(cls, a_name, a_type, default_kw_only):
